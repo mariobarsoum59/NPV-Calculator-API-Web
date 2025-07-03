@@ -1,0 +1,24 @@
+<div class="table-wrapper">
+  <table class="results-table">
+    <thead>
+      <tr>
+        <th>Discount Rate</th>
+        <th>NPV</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let result of results">
+        <td class="rate-cell">{{ result.formattedRate }}</td>
+        <td class="npv-cell" [ngClass]="getNPVClass(result.npv)">
+          {{ formatCurrency(result.npv, result.currency) }}
+        </td>
+        <td class="status-cell">
+          <span class="status-badge" [ngClass]="getNPVClass(result.npv)">
+            {{ result.npv >= 0 ? "Profitable" : "Loss" }}
+          </span>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

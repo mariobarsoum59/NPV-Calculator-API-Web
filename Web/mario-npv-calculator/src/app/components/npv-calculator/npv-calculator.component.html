@@ -1,0 +1,177 @@
+<div class="npv-calculator-container">
+  <header class="calculator-header">
+    <h1>Mario's NPV Calculator</h1>
+    <p class="subtitle">
+      Calculate Net Present Value across multiple discount rates
+    </p>
+  </header>
+
+  <form
+    [formGroup]="calculatorForm"
+    (ngSubmit)="onCalculate()"
+    class="calculator-form"
+  >
+    <div class="form-section">
+      <h2>Cash Flows</h2>
+      <app-cash-flow-input
+        [cashFlows]="cashFlows"
+        (addCashFlow)="addCashFlow()"
+        (removeCashFlow)="removeCashFlow($event)"
+        (updateCashFlow)="updateCashFlow($event.index, $event.value)"
+      >
+      </app-cash-flow-input>
+    </div>
+
+    <div class="form-section">
+      <h2>Discount Rate Parameters</h2>
+      <div class="parameters-grid">
+        <div class="form-group">
+          <label for="lowerBound">Lower Bound (%)</label>
+          <input
+            id="lowerBound"
+            type="number"
+            formControlName="lowerBound"
+            class="form-control"
+            step="0.25"
+            [class.invalid]="
+              calculatorForm.get('lowerBound')?.invalid &&
+              calculatorForm.get('lowerBound')?.touched
+            "
+          />
+          <div
+            class="error-message"
+            *ngIf="
+              calculatorForm.get('lowerBound')?.invalid &&
+              calculatorForm.get('lowerBound')?.touched
+            "
+          >
+            <span *ngIf="calculatorForm.get('lowerBound')?.errors?.['required']"
+              >Lower bound is required</span
+            >
+            <span *ngIf="calculatorForm.get('lowerBound')?.errors?.['min']"
+              >Must be at least 0</span
+            >
+            <span *ngIf="calculatorForm.get('lowerBound')?.errors?.['max']"
+              >Must be at most 100</span
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="upperBound">Upper Bound (%)</label>
+          <input
+            id="upperBound"
+            type="number"
+            formControlName="upperBound"
+            class="form-control"
+            step="0.25"
+            [class.invalid]="
+              calculatorForm.get('upperBound')?.invalid &&
+              calculatorForm.get('upperBound')?.touched
+            "
+          />
+          <div
+            class="error-message"
+            *ngIf="
+              calculatorForm.get('upperBound')?.invalid &&
+              calculatorForm.get('upperBound')?.touched
+            "
+          >
+            <span *ngIf="calculatorForm.get('upperBound')?.errors?.['required']"
+              >Upper bound is required</span
+            >
+            <span *ngIf="calculatorForm.get('upperBound')?.errors?.['min']"
+              >Must be at least 0</span
+            >
+            <span *ngIf="calculatorForm.get('upperBound')?.errors?.['max']"
+              >Must be at most 100</span
+            >
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="increment">Increment (%)</label>
+          <input
+            id="increment"
+            type="number"
+            formControlName="increment"
+            class="form-control"
+            step="0.05"
+            [class.invalid]="
+              calculatorForm.get('increment')?.invalid &&
+              calculatorForm.get('increment')?.touched
+            "
+          />
+          <div
+            class="error-message"
+            *ngIf="
+              calculatorForm.get('increment')?.invalid &&
+              calculatorForm.get('increment')?.touched
+            "
+          >
+            <span *ngIf="calculatorForm.get('increment')?.errors?.['required']"
+              >Increment is required</span
+            >
+            <span *ngIf="calculatorForm.get('increment')?.errors?.['min']"
+              >Must be greater than 0</span
+            >
+            <span *ngIf="calculatorForm.get('increment')?.errors?.['max']"
+              >Must be at most 100</span
+            >
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <app-error-message *ngIf="error" [message]="error"></app-error-message>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary" [disabled]="loading">
+        <span *ngIf="!loading">Calculate NPV</span>
+        <span *ngIf="loading">Calculating...</span>
+      </button>
+      <button
+        type="button"
+        class="btn btn-secondary"
+        (click)="onReset()"
+        [disabled]="loading"
+      >
+        Reset
+      </button>
+    </div>
+  </form>
+
+  <app-loading-spinner *ngIf="loading"></app-loading-spinner>
+
+  <div class="results-section" *ngIf="results && !loading">
+    <div class="results-summary">
+      <h2>Calculation Summary</h2>
+      <div class="summary-grid">
+        <div class="summary-item">
+          <span class="label">Cash Flows:</span>
+          <span class="value"
+            >{{ results.metadata.cashFlowCount }} periods</span
+          >
+        </div>
+        <div class="summary-item">
+          <span class="label">Calculations:</span>
+          <span class="value"
+            >{{ results.metadata.calculationCount }} rates</span
+          >
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-container">
+      <h2>NPV vs Discount Rate</h2>
+      <app-npv-chart [data]="results.results"></app-npv-chart>
+    </div>
+
+    <div class="table-container">
+      <h2>Detailed Results</h2>
+      <app-npv-results-table
+        [results]="results.results"
+      ></app-npv-results-table>
+    </div>
+  </div>
+</div>

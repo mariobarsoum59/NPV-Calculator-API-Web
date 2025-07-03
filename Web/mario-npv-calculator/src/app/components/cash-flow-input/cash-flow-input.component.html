@@ -1,0 +1,39 @@
+<div class="cash-flows-container">
+  <div
+    class="cash-flow-item"
+    *ngFor="let control of formControls; let i = index; trackBy: trackByIndex"
+  >
+    <label class="period-label">Period {{ i }}:</label>
+    <input
+      type="number"
+      [formControl]="getControlAt(i)"
+      (input)="onUpdateCashFlow(i, $event)"
+      class="cash-flow-input"
+      [class.invalid]="getControlAt(i).invalid && getControlAt(i).touched"
+      placeholder="Enter cash flow"
+    />
+    <button
+      type="button"
+      class="remove-btn"
+      (click)="onRemoveCashFlow(i)"
+      [disabled]="cashFlows.length <= 1"
+      title="Remove cash flow"
+    >
+      ×
+    </button>
+    <div
+      class="error-message"
+      *ngIf="getControlAt(i).invalid && getControlAt(i).touched"
+    >
+      <span *ngIf="getControlAt(i).errors?.['required']"
+        >Cash flow is required</span
+      >
+      <span *ngIf="getControlAt(i).errors?.['pattern']"
+        >Must be a valid number</span
+      >
+    </div>
+  </div>
+  <button type="button" class="add-btn" (click)="onAddCashFlow()">
+    + Add Cash Flow
+  </button>
+</div>
